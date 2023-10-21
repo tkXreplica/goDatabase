@@ -74,6 +74,16 @@ func main() {
 		fmt.Println(id, imdbID, title, year, rating, isSuperHero)
 	}
 
+	stm2, err := db.Prepare(`
+	UPDATE goimdb 
+	SET rating=? 
+	WHERE imdbID = ?
+	`)
+	_, err = stm2.Exec(9.0, "tt4154796")
+	if err != nil {
+		log.Fatal("Update error:", err)
+		return
+	}
 }
 
 //tt4154796
