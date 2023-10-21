@@ -19,8 +19,8 @@ func main() {
 	id INT AUTO_INCREMENT,
 	imdbID TEXT NOT NULL UNIQUE,
 	title TEXT NOT NULL,
-	year int NOT NULL,
-	rating float NOT NULL,
+	year INT NOT NULL,
+	rating FLOAT NOT NULL,
 	isSuperHero BOOLEAN NOT NULL,
 	PRIMARY KEY (id)
 	);
@@ -74,16 +74,36 @@ func main() {
 		fmt.Println(id, imdbID, title, year, rating, isSuperHero)
 	}
 
-	stm2, err := db.Prepare(`
-	UPDATE goimdb 
-	SET rating=? 
-	WHERE imdbID = ?
+	stmt2, err := db.Prepare(`
+    UPDATE goimdb
+    SET rating=$1
+    WHERE imdbID=$2
 	`)
-	_, err = stm2.Exec(9.0, "tt4154796")
 	if err != nil {
-		log.Fatal("Update error:", err)
+		// Handle the error
+		log.Fatal(err)
+	}
+
+	r, err = stmt2.Exec(9.2, "tt4154796")
+	if err != nil {
+		// Handle the error
+		log.Fatal(err)
+	}
+
+	rowx := db.QueryRow(`SELECT * FROM goimdb WHERE imdbID=?`, "tt4154796")
+	var id int
+	var imdbID string
+	var title string
+	var year int
+	var rating float32
+	var isSuperHero bool
+	err = rowx.Scan(&id, &imdbID, &title, &year, &rating, &isSuperHero)
+	if err != nil {
+		log.Fatal("Scan one row error:", err)
 		return
 	}
+
+	fmt.Println(id, imdbID, title, year, rating, isSuperHero)
 }
 
 //tt4154796
